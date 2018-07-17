@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.shivora.puwifimanager">
 
+    <!--To check if device is connected to wifi-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--To check the ssid of wifi connected -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
