@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!--To check the ssid of wifi connected -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- For user management purposes -->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -15,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".UserListActivity"
+            android:name=".views.UserListActivity"
             android:label="@string/title_activity_user_list"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
