@@ -5,7 +5,15 @@ public class Listeners {
         void onLoginComplete(boolean isLoggedIn);
     }
 
+    public static interface OnLogoutCompleteListener{
+        void onLogoutComplete();
+    }
+
     public static interface OnNetportalLoginCompleteListener{
         void onNetportalLoginComplete();
+    }
+
+    public static interface OnPasswordChangeSuccessfulListener{
+        void onPasswordChangeSuccessful();
     }
 }

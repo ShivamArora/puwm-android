@@ -45,16 +45,21 @@ public class UserListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                logout((Activity) context);
+                logout((Activity) context, new Listeners.OnLogoutCompleteListener() {
+                    @Override
+                    public void onLogoutComplete() {
+                        Toast.makeText(context,"Logout Successful",Toast.LENGTH_SHORT);
+                    }
+                });
             }
         });
 
         context = UserListActivity.this;
 
-        
+
     }
 
-    private void changePassword(final String user, final String password,final String newPassword) {
+    private void changePassword(final String user, final String password, final String newPassword, final Listeners.OnPasswordChangeSuccessfulListener passwordChangeSuccessfulListener) {
         login((Activity) context, user, password, new Listeners.OnLoginCompleteListener() {
             @Override
             public void onLoginComplete(boolean isLoggedIn) {
@@ -73,6 +78,9 @@ public class UserListActivity extends AppCompatActivity {
                                 public void onResponse(Call<String> call, Response<String> response) {
                                     if (response.body().contains(NetportalService.PASSWORD_CHANGE_SUCCESS)) {
                                         Log.i(TAG, "onResponse: " + "Password Changed Successfully!");
+                                        if (passwordChangeSuccessfulListener!=null){
+                                            passwordChangeSuccessfulListener.onPasswordChangeSuccessful();
+                                        }
                                     } else {
                                         Log.e(TAG, "onResponse: " + "Failed to change password");
                                     }
@@ -192,7 +200,7 @@ public class UserListActivity extends AppCompatActivity {
         }
     }
 
-    private void logout(final Activity context) {
+    private void logout(final Activity context, final Listeners.OnLogoutCompleteListener logoutCompleteListener) {
         if (ConnectionUtils.isConnectedToPuWifi(context)) {
             SecureLoginService secureLoginService = RetrofitClient.getSecureLoginInstance().create(SecureLoginService.class);
             Call<String> call = secureLoginService.logoutUser();
@@ -203,6 +211,9 @@ public class UserListActivity extends AppCompatActivity {
                     String returnedHtmlData = response.body();
                     if (returnedHtmlData.contains(SecureLoginService.LOGOUT_SUCCESS_STRING)) {
                         Log.i(TAG, "onResponse: " + "Logout Successful");
+                        if (logoutCompleteListener!=null){
+                            logoutCompleteListener.onLogoutComplete();
+                        }
                     }
                 }
 
