@@ -8,6 +8,11 @@ import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
 
 public interface SecureLoginService {
+    //Parameters
+    String PARAM_USER_ID = "user";
+    String PARAM_PASSWORD = "password";
+
+    //Response messages
     String LOGIN_SUCCESS_STRING = "External Welcome Page";
     String LOGOUT_SUCCESS_STRING = "Logout Successful";
     String USER_NOT_LOGGED_IN = "User not logged in";
