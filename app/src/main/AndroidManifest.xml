@@ -2,12 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.shivora.puwifimanager">
 
-    <!--To check if device is connected to wifi-->
+    <!-- To check if device is connected to wifi -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!--To check the ssid of wifi connected -->
+    <!-- To check the ssid of wifi connected -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!-- For user management purposes -->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -26,6 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".views.AddUserActivity"></activity>
     </application>
 
 </manifest>
