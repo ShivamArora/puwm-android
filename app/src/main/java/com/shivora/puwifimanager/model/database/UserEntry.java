@@ -1,4 +1,4 @@
-package com.shivora.puwifimanager.database;
+package com.shivora.puwifimanager.model.database;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;

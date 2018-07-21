@@ -11,8 +11,8 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.shivora.puwifimanager.R;
-import com.shivora.puwifimanager.database.UserDatabase;
-import com.shivora.puwifimanager.database.UserEntry;
+import com.shivora.puwifimanager.model.database.UserDatabase;
+import com.shivora.puwifimanager.model.database.UserEntry;
 import com.shivora.puwifimanager.utils.AppExecutors;
 
 public class AddUserActivity extends AppCompatActivity {

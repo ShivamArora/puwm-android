@@ -8,16 +8,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.shivora.puwifimanager.R;
-import com.shivora.puwifimanager.database.UserDatabase;
-import com.shivora.puwifimanager.database.UserEntry;
+import com.shivora.puwifimanager.model.adapters.UserListAdapter;
+import com.shivora.puwifimanager.model.database.UserDatabase;
+import com.shivora.puwifimanager.model.database.UserEntry;
 import com.shivora.puwifimanager.networking.NetportalService;
 import com.shivora.puwifimanager.networking.Listeners;
 import com.shivora.puwifimanager.networking.RetrofitClient;
@@ -38,7 +40,7 @@ public class UserListActivity extends AppCompatActivity {
     private Context context;
 
     private UserDatabase mUserDatabase;
-
+    private UserListAdapter mUserListAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +59,11 @@ public class UserListActivity extends AppCompatActivity {
         context = UserListActivity.this;
         mUserDatabase = UserDatabase.getInstance(context);
 
+        RecyclerView recyclerView = findViewById(R.id.rv_userlist);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        mUserListAdapter = new UserListAdapter(null);
+        recyclerView.setAdapter(mUserListAdapter);
         fetchUsers();
     }
 
@@ -69,6 +76,7 @@ public class UserListActivity extends AppCompatActivity {
                 for (UserEntry userEntry: userEntries){
                     Log.d(TAG, "User: "+userEntry);
                 }
+                mUserListAdapter.setUserList(userEntries);
             }
         });
     }

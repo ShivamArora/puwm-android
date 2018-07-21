@@ -1,4 +1,4 @@
-package com.shivora.puwifimanager.database;
+package com.shivora.puwifimanager.model.database;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;

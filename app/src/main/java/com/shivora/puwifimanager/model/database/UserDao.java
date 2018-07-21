@@ -1,4 +1,4 @@
-package com.shivora.puwifimanager.database;
+package com.shivora.puwifimanager.model.database;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
