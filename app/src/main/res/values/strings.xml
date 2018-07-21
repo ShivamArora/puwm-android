@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">PUWifiManager</string>
     <string name="title_activity_user_list">Users</string>
+    <string name="saved_username">Saved Username</string>
+    <string name="saved_userid">Saved UserID</string>
+    <string name="saved_password">Saved Password</string>
+    <string name="add_user">Add User</string>
 </resources>

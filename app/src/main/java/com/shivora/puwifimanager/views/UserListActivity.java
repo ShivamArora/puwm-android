@@ -57,6 +57,7 @@ public class UserListActivity extends AppCompatActivity {
         context = UserListActivity.this;
         mUserDatabase = UserDatabase.getInstance(context);
 
+        fetchUsers();
     }
 
     private void fetchUsers(){
@@ -65,6 +66,9 @@ public class UserListActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable List<UserEntry> userEntries) {
                 //TODO: Display list of users using userEntries
+                for (UserEntry userEntry: userEntries){
+                    Log.d(TAG, "User: "+userEntry);
+                }
             }
         });
     }
