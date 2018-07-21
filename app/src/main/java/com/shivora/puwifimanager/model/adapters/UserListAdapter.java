@@ -19,9 +19,11 @@ import java.util.List;
 public class UserListAdapter extends RecyclerView.Adapter {
     private Context context;
     private List<UserEntry> userList;
+    private ListItemClickListener itemClickListener;
 
-    public UserListAdapter(List<UserEntry> userList){
+    public UserListAdapter(List<UserEntry> userList, ListItemClickListener itemClickListener){
         this.userList = userList;
+        this.itemClickListener = itemClickListener;
     }
 
     @NonNull
@@ -46,12 +48,13 @@ public class UserListAdapter extends RecyclerView.Adapter {
         notifyDataSetChanged();
     }
 
-    class UserListViewHolder extends RecyclerView.ViewHolder{
+    class UserListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView tvUserNickName;
         private TextView tvUserId;
 
         public UserListViewHolder(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             tvUserNickName = itemView.findViewById(R.id.tv_user_nickname);
             tvUserId = itemView.findViewById(R.id.tv_user_id);
         }
@@ -60,6 +63,13 @@ public class UserListAdapter extends RecyclerView.Adapter {
             UserEntry user = userList.get(position);
             tvUserNickName.setText(user.getNickname());
             tvUserId.setText(user.getUserId());
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            UserEntry user = userList.get(position);
+            itemClickListener.onListItemClick(user);
         }
     }
 }

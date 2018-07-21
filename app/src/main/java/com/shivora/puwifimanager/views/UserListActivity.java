@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.shivora.puwifimanager.R;
+import com.shivora.puwifimanager.model.adapters.ListItemClickListener;
 import com.shivora.puwifimanager.model.adapters.UserListAdapter;
 import com.shivora.puwifimanager.model.database.UserDatabase;
 import com.shivora.puwifimanager.model.database.UserEntry;
@@ -26,6 +27,7 @@ import com.shivora.puwifimanager.networking.RetrofitClient;
 import com.shivora.puwifimanager.networking.SecureLoginService;
 import com.shivora.puwifimanager.utils.ConnectionUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class UserListActivity extends AppCompatActivity {
+public class UserListActivity extends AppCompatActivity implements ListItemClickListener{
 
     private static final String TAG = UserListActivity.class.getSimpleName();
     private Context context;
@@ -62,7 +64,7 @@ public class UserListActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.rv_userlist);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        mUserListAdapter = new UserListAdapter(null);
+        mUserListAdapter = new UserListAdapter(new ArrayList<UserEntry>(),this);
         recyclerView.setAdapter(mUserListAdapter);
         fetchUsers();
     }
@@ -79,6 +81,11 @@ public class UserListActivity extends AppCompatActivity {
                 mUserListAdapter.setUserList(userEntries);
             }
         });
+    }
+
+    @Override
+    public void onListItemClick(UserEntry user) {
+        Log.i(TAG, "onListItemClick: "+user.getNickname());
     }
 
     private void deleteUser(UserEntry user){
