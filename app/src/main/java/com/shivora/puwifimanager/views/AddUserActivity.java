@@ -61,7 +61,6 @@ public class AddUserActivity extends AppCompatActivity {
             public void onChanged(@Nullable UserEntry userEntry) {
                 user.removeObserver(this);
 
-                //TODO: Show user data in activity
                 mUser = userEntry;
                 etNickName.setText(userEntry.getNickname());
                 etUserId.setText(userEntry.getUserId());

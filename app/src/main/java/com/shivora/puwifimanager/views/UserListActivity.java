@@ -13,6 +13,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -37,13 +40,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class UserListActivity extends AppCompatActivity implements ListItemClickListener{
+public class UserListActivity extends AppCompatActivity implements ListItemClickListener {
 
     private static final String TAG = UserListActivity.class.getSimpleName();
     private Context context;
 
     private UserDatabase mUserDatabase;
     private UserListAdapter mUserListAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +59,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(context,AddUserActivity.class));
+                startActivity(new Intent(context, AddUserActivity.class));
             }
         });
 
@@ -65,48 +69,34 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         RecyclerView recyclerView = findViewById(R.id.rv_userlist);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        mUserListAdapter = new UserListAdapter(new ArrayList<UserEntry>(),this);
+        mUserListAdapter = new UserListAdapter(new ArrayList<UserEntry>(), this);
         recyclerView.setAdapter(mUserListAdapter);
         fetchUsers();
     }
 
-    private void fetchUsers(){
-        LiveData<List<UserEntry>> usersList = mUserDatabase.userDao().loadAllUsers();
-        usersList.observe(UserListActivity.this, new Observer<List<UserEntry>>() {
-            @Override
-            public void onChanged(@Nullable List<UserEntry> userEntries) {
-                //TODO: Display list of users using userEntries
-                for (UserEntry userEntry: userEntries){
-                    Log.d(TAG, "User: "+userEntry);
-                }
-                mUserListAdapter.setUserList(userEntries);
-            }
-        });
-    }
-
     @Override
     public void onListItemClick(final UserEntry user) {
-        Log.i(TAG, "onListItemClick: "+user.getNickname());
+        Log.i(TAG, "onListItemClick: " + user.getNickname());
         final UserOptionsBottomSheet userOptionsBottomSheet = new UserOptionsBottomSheet();
         userOptionsBottomSheet.setOnUserOptionClickListener(new UserOptionsBottomSheet.UserOptionsClickListener() {
             @Override
             public void onUserOptionClicked(View view) {
                 int id = view.getId();
                 userOptionsBottomSheet.dismiss();
-                switch (id){
+                switch (id) {
                     case R.id.item_login:
                         login((Activity) context, user.getUserId(), user.getPassword(), new Listeners.OnLoginCompleteListener() {
                             @Override
                             public void onLoginComplete(boolean isLoggedIn) {
-                                Log.d(TAG, "onLoginComplete: "+isLoggedIn);
-                                Toast.makeText(context,"Logged in?: "+isLoggedIn,Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "onLoginComplete: " + isLoggedIn);
+                                Toast.makeText(context, "Logged in?: " + isLoggedIn, Toast.LENGTH_SHORT).show();
                             }
                         });
                         break;
 
                     case R.id.item_edit_user:
-                        Intent editUserIntent = new Intent(context,AddUserActivity.class);
-                        editUserIntent.putExtra(AddUserActivity.EXTRA_USER_ID,user.getUserId());
+                        Intent editUserIntent = new Intent(context, AddUserActivity.class);
+                        editUserIntent.putExtra(AddUserActivity.EXTRA_USER_ID, user.getUserId());
                         startActivity(editUserIntent);
                         break;
 
@@ -123,15 +113,50 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                     case R.id.item_delete_user:
                         deleteUser(user);
                         break;
-                        default:
-                            Log.e(TAG, "onUserOptionClicked: "+"UnsupportedOperation" );
+                    default:
+                        Log.e(TAG, "onUserOptionClicked: " + "UnsupportedOperation");
                 }
             }
         });
-        userOptionsBottomSheet.show(getSupportFragmentManager(),"UserOptions");
+        userOptionsBottomSheet.show(getSupportFragmentManager(), "UserOptions");
     }
 
-    private void deleteUser(final UserEntry user){
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_activity_user_list, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_logout:
+                logout((Activity) context, new Listeners.OnLogoutCompleteListener() {
+                    @Override
+                    public void onLogoutComplete() {
+                        //TODO: Notify logout complete
+                    }
+                });
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void fetchUsers() {
+        LiveData<List<UserEntry>> usersList = mUserDatabase.userDao().loadAllUsers();
+        usersList.observe(UserListActivity.this, new Observer<List<UserEntry>>() {
+            @Override
+            public void onChanged(@Nullable List<UserEntry> userEntries) {
+                for (UserEntry userEntry : userEntries) {
+                    Log.d(TAG, "User: " + userEntry);
+                }
+                mUserListAdapter.setUserList(userEntries);
+            }
+        });
+    }
+
+    private void deleteUser(final UserEntry user) {
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -159,7 +184,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                                 public void onResponse(Call<String> call, Response<String> response) {
                                     if (response.body().contains(NetportalService.PASSWORD_CHANGE_SUCCESS)) {
                                         Log.i(TAG, "onResponse: " + "Password Changed Successfully!");
-                                        if (passwordChangeSuccessfulListener!=null){
+                                        if (passwordChangeSuccessfulListener != null) {
                                             passwordChangeSuccessfulListener.onPasswordChangeSuccessful();
                                         }
                                     } else {
@@ -194,12 +219,11 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                 String returnedHtmlData = response.body();
                 if (returnedHtmlData.contains(NetportalService.NETPORTAL_LOGIN_SUCCESS)) {
                     Log.i(TAG, "onResponse: " + "Netportal Login Successful!");
-                    if(netportalLoginCompleteListener!=null){
+                    if (netportalLoginCompleteListener != null) {
                         netportalLoginCompleteListener.onNetportalLoginComplete();
                     }
-                }
-                else{
-                    Log.e(TAG, "onResponse: " + "Failed to login NetPortal" );
+                } else {
+                    Log.e(TAG, "onResponse: " + "Failed to login NetPortal");
                 }
             }
 
@@ -213,8 +237,8 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     private void login(final Activity context, String user, String password, final Listeners.OnLoginCompleteListener onLoginCompleteListener) {
         //Build the parameters
         Map<String, String> userInfo = new HashMap<>();
-        userInfo.put(SecureLoginService.PARAM_USER_ID,user);
-        userInfo.put(SecureLoginService.PARAM_PASSWORD,password);
+        userInfo.put(SecureLoginService.PARAM_USER_ID, user);
+        userInfo.put(SecureLoginService.PARAM_PASSWORD, password);
 
         if (ConnectionUtils.isConnectedToPuWifi(context)) {
             SecureLoginService secureLoginService = RetrofitClient.getSecureLoginInstance().create(SecureLoginService.class);
@@ -258,7 +282,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                     String returnedHtmlData = response.body();
                     if (returnedHtmlData.contains(SecureLoginService.LOGOUT_SUCCESS_STRING)) {
                         Log.i(TAG, "onResponse: " + "Logout Successful");
-                        if (logoutCompleteListener!=null){
+                        if (logoutCompleteListener != null) {
                             logoutCompleteListener.onLogoutComplete();
                         }
                     }
