@@ -5,4 +5,5 @@
     <string name="saved_userid">Saved UserID</string>
     <string name="saved_password">Saved Password</string>
     <string name="add_user">Add User</string>
+    <string name="update_user">Update user</string>
 </resources>

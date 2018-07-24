@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.shivora.puwifimanager.R;
@@ -23,7 +24,7 @@ public class AddUserActivity extends AppCompatActivity {
     public static final String TAG = AddUserActivity.class.getSimpleName();
 
     private EditText etNickName,etUserId,etPassword;
-
+    private Button btnSubmit;
     private Context context;
     private UserDatabase mUserDatabase;
     private UserEntry mUser;
@@ -50,6 +51,7 @@ public class AddUserActivity extends AppCompatActivity {
         etNickName = findViewById(R.id.et_user_nickname);
         etUserId = findViewById(R.id.et_user_id);
         etPassword = findViewById(R.id.et_password);
+        btnSubmit = findViewById(R.id.btn_add);
     }
 
     private void fetchUser(String userId){
@@ -65,6 +67,12 @@ public class AddUserActivity extends AppCompatActivity {
                 etUserId.setText(userEntry.getUserId());
                 etPassword.setText(userEntry.getPassword());
                 Log.d(TAG, "Password: "+userEntry.getPassword());
+
+                //Update button UI
+                btnSubmit.setText("Save User");
+                btnSubmit.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.ic_baseline_save_24px,0,0);
+                //Update title
+                setTitle(R.string.update_user);
             }
         });
     }

@@ -22,11 +22,15 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".views.AddUserActivity"></activity>
+        <activity android:name=".views.AddUserActivity"
+            android:label="@string/add_user"
+            android:parentActivityName=".views.UserListActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".views.UserListActivity"/>
+        </activity>
     </application>
 
 </manifest>
