@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -17,14 +18,15 @@ import com.shivora.puwifimanager.utils.AppExecutors;
 
 public class AddUserActivity extends AppCompatActivity {
 
-    private static final String EXTRA_USER_ID = "user_id";
+    public static final String EXTRA_USER_ID = "user_id";
     private static final String DEFAULT_USER_ID = "000000";
+    public static final String TAG = AddUserActivity.class.getSimpleName();
 
     private EditText etNickName,etUserId,etPassword;
 
     private Context context;
     private UserDatabase mUserDatabase;
-    private UserEntry user;
+    private UserEntry mUser;
 
     private String mUserId = DEFAULT_USER_ID;
     @Override
@@ -58,27 +60,31 @@ public class AddUserActivity extends AppCompatActivity {
                 user.removeObserver(this);
 
                 //TODO: Show user data in activity
-
+                mUser = userEntry;
+                etNickName.setText(userEntry.getNickname());
+                etUserId.setText(userEntry.getUserId());
+                etPassword.setText(userEntry.getPassword());
+                Log.d(TAG, "Password: "+userEntry.getPassword());
             }
         });
     }
 
     private void insertUser(String userId,String password,String nickname){
-        user = new UserEntry(userId,password,nickname);
-        mUserDatabase.userDao().insertUser(user);
+        mUser = new UserEntry(userId,password,nickname);
+        mUserDatabase.userDao().insertUser(mUser);
     }
 
     private void updateUser(String userId,String password,String nickname){
-        user.setUserId(userId);
-        user.setPassword(password);
-        user.setNickname(nickname);
-        mUserDatabase.userDao().updateUser(user);
+        mUser.setUserId(userId);
+        mUser.setPassword(password);
+        mUser.setNickname(nickname);
+        mUserDatabase.userDao().updateUser(mUser);
     }
 
     public void submit(View view) {
         final String nickname = etNickName.getText().toString().trim();
         final String userId = etUserId.getText().toString().trim();
-        final String password = etUserId.getText().toString().trim();
+        final String password = etPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(nickname)||TextUtils.isEmpty(userId)||TextUtils.isEmpty(password)){
             //TODO: Show error - All Fields are required
@@ -87,6 +93,7 @@ public class AddUserActivity extends AppCompatActivity {
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d(TAG, "run: "+password);
                     if (mUserId.equals(DEFAULT_USER_ID)) {
                         insertUser(userId, password, nickname);
                     }

@@ -25,6 +25,7 @@ import com.shivora.puwifimanager.networking.NetportalService;
 import com.shivora.puwifimanager.networking.Listeners;
 import com.shivora.puwifimanager.networking.RetrofitClient;
 import com.shivora.puwifimanager.networking.SecureLoginService;
+import com.shivora.puwifimanager.utils.AppExecutors;
 import com.shivora.puwifimanager.utils.ConnectionUtils;
 
 import java.util.ArrayList;
@@ -84,14 +85,59 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     }
 
     @Override
-    public void onListItemClick(UserEntry user) {
+    public void onListItemClick(final UserEntry user) {
         Log.i(TAG, "onListItemClick: "+user.getNickname());
-        UserOptionsBottomSheet userOptionsBottomSheet = new UserOptionsBottomSheet();
+        final UserOptionsBottomSheet userOptionsBottomSheet = new UserOptionsBottomSheet();
+        userOptionsBottomSheet.setOnUserOptionClickListener(new UserOptionsBottomSheet.UserOptionsClickListener() {
+            @Override
+            public void onUserOptionClicked(View view) {
+                int id = view.getId();
+                userOptionsBottomSheet.dismiss();
+                switch (id){
+                    case R.id.item_login:
+                        login((Activity) context, user.getUserId(), user.getPassword(), new Listeners.OnLoginCompleteListener() {
+                            @Override
+                            public void onLoginComplete(boolean isLoggedIn) {
+                                Log.d(TAG, "onLoginComplete: "+isLoggedIn);
+                                Toast.makeText(context,"Logged in?: "+isLoggedIn,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        break;
+
+                    case R.id.item_edit_user:
+                        Intent editUserIntent = new Intent(context,AddUserActivity.class);
+                        editUserIntent.putExtra(AddUserActivity.EXTRA_USER_ID,user.getUserId());
+                        startActivity(editUserIntent);
+                        break;
+
+                    case R.id.item_change_password:
+                        //TODO: Ask user for a new password
+                        /*String newPassword = "";
+                        changePassword(user.getUserId(),user.getPassword(),newPassword,new Listeners.OnPasswordChangeSuccessfulListener(){
+                            @Override
+                            public void onPasswordChangeSuccessful() {
+                                Log.d(TAG, "onPasswordChangeSuccessful: "+"Password Changed");
+                            }
+                        });*/
+                        break;
+                    case R.id.item_delete_user:
+                        deleteUser(user);
+                        break;
+                        default:
+                            Log.e(TAG, "onUserOptionClicked: "+"UnsupportedOperation" );
+                }
+            }
+        });
         userOptionsBottomSheet.show(getSupportFragmentManager(),"UserOptions");
     }
 
-    private void deleteUser(UserEntry user){
-        mUserDatabase.userDao().deleteUser(user);
+    private void deleteUser(final UserEntry user){
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mUserDatabase.userDao().deleteUser(user);
+            }
+        });
     }
 
     private void changePassword(final String user, final String password, final String newPassword, final Listeners.OnPasswordChangeSuccessfulListener passwordChangeSuccessfulListener) {
