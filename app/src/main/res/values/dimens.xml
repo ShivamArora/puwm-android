@@ -2,4 +2,5 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="et_margin">16dp</dimen>
     <dimen name="match_constraint">0dp</dimen>
+    <dimen name="bottom_sheet_item_text_size">18sp</dimen>
 </resources>

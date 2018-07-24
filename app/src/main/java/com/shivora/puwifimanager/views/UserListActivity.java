@@ -86,6 +86,8 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     @Override
     public void onListItemClick(UserEntry user) {
         Log.i(TAG, "onListItemClick: "+user.getNickname());
+        UserOptionsBottomSheet userOptionsBottomSheet = new UserOptionsBottomSheet();
+        userOptionsBottomSheet.show(getSupportFragmentManager(),"UserOptions");
     }
 
     private void deleteUser(UserEntry user){
