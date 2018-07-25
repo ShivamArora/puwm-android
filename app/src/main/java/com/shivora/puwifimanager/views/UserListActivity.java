@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shivora.puwifimanager.R;
 import com.shivora.puwifimanager.model.adapters.ListItemClickListener;
 import com.shivora.puwifimanager.model.adapters.UserListAdapter;
@@ -48,6 +49,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     private UserDatabase mUserDatabase;
     private UserListAdapter mUserListAdapter;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +67,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
 
         context = UserListActivity.this;
         mUserDatabase = UserDatabase.getInstance(context);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
 
         RecyclerView recyclerView = findViewById(R.id.rv_userlist);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -157,6 +160,9 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     }
 
     private void deleteUser(final UserEntry user) {
+        //TODO: Ask for confirmation before deleting
+
+        //Delete user
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
