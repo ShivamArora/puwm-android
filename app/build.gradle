@@ -53,10 +53,13 @@ dependencies {
     //CardView
     implementation 'com.android.support:cardview-v7:27.1.1'
 
-    //Firebase
+    //Firebase core with Analytics
     implementation 'com.google.firebase:firebase-core:16.0.1'
 
     //Crashlytics
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.3'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
+
+    //Firebase Ads with AdMob
+    implementation 'com.google.firebase:firebase-ads:15.0.1'
 }
 apply plugin: 'com.google.gms.google-services'

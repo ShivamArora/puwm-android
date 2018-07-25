@@ -26,8 +26,8 @@ public class AddUserActivity extends AppCompatActivity {
     private EditText etNickName,etUserId,etPassword;
     private Button btnSubmit;
     private Context context;
-    private UserDatabase mUserDatabase;
-    private UserEntry mUser;
+    private static UserDatabase mUserDatabase;
+    private static UserEntry mUser;
 
     private String mUserId = DEFAULT_USER_ID;
     @Override
@@ -81,7 +81,7 @@ public class AddUserActivity extends AppCompatActivity {
         mUserDatabase.userDao().insertUser(mUser);
     }
 
-    private void updateUser(String userId,String password,String nickname){
+    public static void updateUser(String userId,String password,String nickname){
         mUser.setUserId(userId);
         mUser.setPassword(password);
         mUser.setNickname(nickname);

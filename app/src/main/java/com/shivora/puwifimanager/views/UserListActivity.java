@@ -1,24 +1,32 @@
 package com.shivora.puwifimanager.views;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shivora.puwifimanager.R;
 import com.shivora.puwifimanager.model.adapters.ListItemClickListener;
@@ -49,6 +57,8 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     private UserDatabase mUserDatabase;
     private UserListAdapter mUserListAdapter;
 
+    private TextInputEditText etNewPassword,etConfirmPassword;
+
     private FirebaseAnalytics mFirebaseAnalytics;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +77,10 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
 
         context = UserListActivity.this;
         mUserDatabase = UserDatabase.getInstance(context);
+        //Init analytics
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
+        //Init Mobile Ads
+        MobileAds.initialize(context,"MY_ADMOB_APP_ID");
 
         RecyclerView recyclerView = findViewById(R.id.rv_userlist);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -105,19 +118,15 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
 
                     case R.id.item_change_password:
                         //TODO: Ask user for a new password
-                        /*String newPassword = "";
-                        changePassword(user.getUserId(),user.getPassword(),newPassword,new Listeners.OnPasswordChangeSuccessfulListener(){
-                            @Override
-                            public void onPasswordChangeSuccessful() {
-                                Log.d(TAG, "onPasswordChangeSuccessful: "+"Password Changed");
-                            }
-                        });*/
+                        AlertDialog changePasswordDialog = buildChangePasswordDialog(user);
+                        changePasswordDialog.show();
                         break;
                     case R.id.item_delete_user:
                         deleteUser(user);
                         break;
                     default:
                         Log.e(TAG, "onUserOptionClicked: " + "UnsupportedOperation");
+                        Crashlytics.logException(new Exception("Unsupported User Option Clicked"));
                 }
             }
         });
@@ -146,6 +155,11 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         }
     }
 
+
+    /**
+     * Gets the saved users list from the database
+     * and display the list using LiveData
+     */
     private void fetchUsers() {
         LiveData<List<UserEntry>> usersList = mUserDatabase.userDao().loadAllUsers();
         usersList.observe(UserListActivity.this, new Observer<List<UserEntry>>() {
@@ -159,6 +173,60 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         });
     }
 
+
+    private AlertDialog buildChangePasswordDialog(final UserEntry user){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = getLayoutInflater();
+
+        View dialog = inflater.inflate(R.layout.dialog_change_password,null);
+        etNewPassword = dialog.findViewById(R.id.et_new_password);
+        etConfirmPassword = dialog.findViewById(R.id.et_confirm_password);
+
+        builder.setTitle("Change Password")
+                .setView(dialog)
+                .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        final String newPassword = etNewPassword.getText().toString().trim();
+                        String confirmPassword = etConfirmPassword.getText().toString().trim();
+
+                        //Check if length of password is minimum 6 characters
+                        if (newPassword.length()>=6) {
+                            //Check if both new and confirm password are equal
+                            if (TextUtils.equals(newPassword, confirmPassword)) {
+                                Log.d(TAG, "onClick: "+"Passwords are same");
+                                //Change Password
+                                changePassword(user.getUserId(), user.getPassword(), newPassword, new Listeners.OnPasswordChangeSuccessfulListener() {
+                                    @Override
+                                    public void onPasswordChangeSuccessful() {
+                                        Log.d(TAG, "onPasswordChangeSuccessful: " + "Password Changed on network");
+                                        AddUserActivity.updateUser(user.getUserId(), newPassword, user.getNickname());
+                                        Log.d(TAG, "onPasswordChangeSuccessful: " + "Password changed on local database");
+                                    }
+                                });
+                            } else {
+                                //TODO: Display dialog two passwords should match
+                                Log.d(TAG, "onClick: "+"Passwords are different");
+                            }
+                        }
+                        else{
+                            //TODO: Display dialog length of password should be atleast 6 characters
+                        }
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        return builder.create();
+    }
+
+    /**
+     * Deletes the user from the database
+     * @param user
+     */
     private void deleteUser(final UserEntry user) {
         //TODO: Ask for confirmation before deleting
 
@@ -171,6 +239,13 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         });
     }
 
+    /**
+     * Changes the password on network
+     * @param user
+     * @param password
+     * @param newPassword
+     * @param passwordChangeSuccessfulListener
+     */
     private void changePassword(final String user, final String password, final String newPassword, final Listeners.OnPasswordChangeSuccessfulListener passwordChangeSuccessfulListener) {
         login((Activity) context, user, password, new Listeners.OnLoginCompleteListener() {
             @Override
