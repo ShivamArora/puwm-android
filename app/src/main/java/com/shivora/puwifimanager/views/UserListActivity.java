@@ -8,6 +8,7 @@ import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -17,15 +18,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shivora.puwifimanager.R;
@@ -58,8 +65,11 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     private UserListAdapter mUserListAdapter;
 
     private TextInputEditText etNewPassword,etConfirmPassword;
+    private AdView mAdView;
+    private FloatingActionButton fab;
 
     private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +77,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,7 +90,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         //Init analytics
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
         //Init Mobile Ads
-        MobileAds.initialize(context,"MY_ADMOB_APP_ID");
+        MobileAds.initialize(context,getString(R.string.admob_app_id));
 
         RecyclerView recyclerView = findViewById(R.id.rv_userlist);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -88,6 +98,49 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         mUserListAdapter = new UserListAdapter(new ArrayList<UserEntry>(), this);
         recyclerView.setAdapter(mUserListAdapter);
         fetchUsers();
+        loadAds();
+    }
+
+    private void loadAds() {
+        mAdView = findViewById(R.id.adview_userlist_banner);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+        mAdView.setVisibility(View.GONE);
+        //Listener to make sure adview is visible only when ad is successfully loaded
+        mAdView.setAdListener(new AdListener(){
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                Log.d(TAG, "onAdLoaded: true");
+                mAdView.setVisibility(View.VISIBLE);
+                int margin = (int) getResources().getDimension(R.dimen.fab_margin);
+                Log.d(TAG, "onAdLoaded: "+margin);
+                setFabBottomMargin(convertDpToPixel(66));
+            }
+
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+                Log.d(TAG, "onAdFailedToLoad: true");
+                mAdView.setVisibility(View.GONE);
+                setFabBottomMargin(convertDpToPixel(16));
+            }
+        });
+    }
+
+    private void setFabBottomMargin(int margin) {
+        int defaultFabMargin = (int) getResources().getDimension(R.dimen.fab_margin);
+        if (fab.getLayoutParams() instanceof ViewGroup.MarginLayoutParams){
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+            params.setMargins(defaultFabMargin,defaultFabMargin,defaultFabMargin,margin);
+            fab.requestLayout();
+        }
+    }
+
+    private int convertDpToPixel(int dp){
+        Resources resources = getResources();
+        float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,dp,resources.getDisplayMetrics());
+        return Math.round(pixels);
     }
 
     @Override
@@ -115,9 +168,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                         editUserIntent.putExtra(AddUserActivity.EXTRA_USER_ID, user.getUserId());
                         startActivity(editUserIntent);
                         break;
-
                     case R.id.item_change_password:
-                        //TODO: Ask user for a new password
                         AlertDialog changePasswordDialog = buildChangePasswordDialog(user);
                         changePasswordDialog.show();
                         break;
