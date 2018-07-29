@@ -1,5 +1,6 @@
 package com.shivora.puwifimanager.views;
 
+import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
@@ -16,6 +17,7 @@ import com.shivora.puwifimanager.R;
 import com.shivora.puwifimanager.model.database.UserDatabase;
 import com.shivora.puwifimanager.model.database.UserEntry;
 import com.shivora.puwifimanager.utils.AppExecutors;
+import com.shivora.puwifimanager.utils.FlashbarUtils;
 
 public class AddUserActivity extends AppCompatActivity {
 
@@ -95,6 +97,7 @@ public class AddUserActivity extends AppCompatActivity {
 
         if (TextUtils.isEmpty(nickname)||TextUtils.isEmpty(userId)||TextUtils.isEmpty(password)){
             //TODO: Show error - All Fields are required
+            FlashbarUtils.showErrorDialog((Activity) context,"All fields are required");
         }
         else{
             AppExecutors.getInstance().diskIO().execute(new Runnable() {

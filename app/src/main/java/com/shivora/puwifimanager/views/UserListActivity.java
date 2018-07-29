@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.andrognito.flashbar.Flashbar;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -46,6 +47,7 @@ import com.shivora.puwifimanager.networking.RetrofitClient;
 import com.shivora.puwifimanager.networking.SecureLoginService;
 import com.shivora.puwifimanager.utils.AppExecutors;
 import com.shivora.puwifimanager.utils.ConnectionUtils;
+import com.shivora.puwifimanager.utils.FlashbarUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +66,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     private UserDatabase mUserDatabase;
     private UserListAdapter mUserListAdapter;
 
-    private TextInputEditText etNewPassword,etConfirmPassword;
+    private TextInputEditText etNewPassword, etConfirmPassword;
     private AdView mAdView;
     private FloatingActionButton fab;
 
@@ -90,7 +92,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         //Init analytics
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
         //Init Mobile Ads
-        MobileAds.initialize(context,getString(R.string.admob_app_id));
+        MobileAds.initialize(context, getString(R.string.admob_app_id));
 
         RecyclerView recyclerView = findViewById(R.id.rv_userlist);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -107,14 +109,14 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         mAdView.loadAd(adRequest);
         mAdView.setVisibility(View.GONE);
         //Listener to make sure adview is visible only when ad is successfully loaded
-        mAdView.setAdListener(new AdListener(){
+        mAdView.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
                 super.onAdLoaded();
                 Log.d(TAG, "onAdLoaded: true");
                 mAdView.setVisibility(View.VISIBLE);
                 int margin = (int) getResources().getDimension(R.dimen.fab_margin);
-                Log.d(TAG, "onAdLoaded: "+margin);
+                Log.d(TAG, "onAdLoaded: " + margin);
                 setFabBottomMargin(convertDpToPixel(66));
             }
 
@@ -130,16 +132,16 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
 
     private void setFabBottomMargin(int margin) {
         int defaultFabMargin = (int) getResources().getDimension(R.dimen.fab_margin);
-        if (fab.getLayoutParams() instanceof ViewGroup.MarginLayoutParams){
+        if (fab.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
-            params.setMargins(defaultFabMargin,defaultFabMargin,defaultFabMargin,margin);
+            params.setMargins(defaultFabMargin, defaultFabMargin, defaultFabMargin, margin);
             fab.requestLayout();
         }
     }
 
-    private int convertDpToPixel(int dp){
+    private int convertDpToPixel(int dp) {
         Resources resources = getResources();
-        float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,dp,resources.getDisplayMetrics());
+        float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.getDisplayMetrics());
         return Math.round(pixels);
     }
 
@@ -159,6 +161,12 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                             public void onLoginComplete(boolean isLoggedIn) {
                                 Log.d(TAG, "onLoginComplete: " + isLoggedIn);
                                 Toast.makeText(context, "Logged in?: " + isLoggedIn, Toast.LENGTH_SHORT).show();
+                                if (isLoggedIn){
+                                    FlashbarUtils.showMessageDialog((Activity) context,"Login Successful");
+                                }
+                                else{
+                                    FlashbarUtils.showErrorDialog((Activity) context,"Failed to login");
+                                }
                             }
                         });
                         break;
@@ -198,6 +206,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                     @Override
                     public void onLogoutComplete() {
                         //TODO: Notify logout complete
+                        FlashbarUtils.showMessageDialog((Activity) context, "Logged out successfully!");
                     }
                 });
                 return true;
@@ -225,11 +234,11 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     }
 
 
-    private AlertDialog buildChangePasswordDialog(final UserEntry user){
+    private AlertDialog buildChangePasswordDialog(final UserEntry user) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = getLayoutInflater();
 
-        View dialog = inflater.inflate(R.layout.dialog_change_password,null);
+        View dialog = inflater.inflate(R.layout.dialog_change_password, null);
         etNewPassword = dialog.findViewById(R.id.et_new_password);
         etConfirmPassword = dialog.findViewById(R.id.et_confirm_password);
 
@@ -242,10 +251,10 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                         String confirmPassword = etConfirmPassword.getText().toString().trim();
 
                         //Check if length of password is minimum 6 characters
-                        if (newPassword.length()>=6) {
+                        if (newPassword.length() >= 6) {
                             //Check if both new and confirm password are equal
                             if (TextUtils.equals(newPassword, confirmPassword)) {
-                                Log.d(TAG, "onClick: "+"Passwords are same");
+                                Log.d(TAG, "onClick: " + "Passwords are same");
                                 //Change Password
                                 changePassword(user.getUserId(), user.getPassword(), newPassword, new Listeners.OnPasswordChangeSuccessfulListener() {
                                     @Override
@@ -253,15 +262,17 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                                         Log.d(TAG, "onPasswordChangeSuccessful: " + "Password Changed on network");
                                         AddUserActivity.updateUser(user.getUserId(), newPassword, user.getNickname());
                                         Log.d(TAG, "onPasswordChangeSuccessful: " + "Password changed on local database");
+                                        FlashbarUtils.showMessageDialog((Activity) context,"Password changed successfully!");
                                     }
                                 });
                             } else {
                                 //TODO: Display dialog two passwords should match
-                                Log.d(TAG, "onClick: "+"Passwords are different");
+                                Log.d(TAG, "onClick: " + "Passwords are different");
+                                FlashbarUtils.showErrorDialog((Activity) context, "The two passwords must match!");
                             }
-                        }
-                        else{
+                        } else {
                             //TODO: Display dialog length of password should be atleast 6 characters
+                            FlashbarUtils.showErrorDialog((Activity) context, "Length of password should be atleast 6 characters");
                         }
                     }
                 })
@@ -276,22 +287,36 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
 
     /**
      * Deletes the user from the database
+     *
      * @param user
      */
     private void deleteUser(final UserEntry user) {
         //TODO: Ask for confirmation before deleting
-
-        //Delete user
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                mUserDatabase.userDao().deleteUser(user);
-            }
-        });
+        FlashbarUtils.showConfirmationDialog((Activity) context, "Are you sure you want to delete this user?",
+                new Flashbar.OnActionTapListener() {
+                    @Override
+                    public void onActionTapped(Flashbar flashbar) {
+                        Log.i(TAG, "onActionTapped: "+"User selected YES");
+                        //Delete user
+                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                mUserDatabase.userDao().deleteUser(user);
+                            }
+                        });
+                    }
+                },
+                new Flashbar.OnActionTapListener() {
+                    @Override
+                    public void onActionTapped(Flashbar flashbar) {
+                        Log.i(TAG, "onActionTapped: "+"User selected NO");
+                    }
+                });
     }
 
     /**
      * Changes the password on network
+     *
      * @param user
      * @param password
      * @param newPassword
