@@ -13,7 +13,7 @@ public class FlashbarUtils {
 
     private static Flashbar.Builder getInstance(Activity context) {
         if (flashbarBuilder == null) {
-            return new Flashbar.Builder(context).gravity(Flashbar.Gravity.BOTTOM);
+            return new Flashbar.Builder(context).gravity(Flashbar.Gravity.BOTTOM).duration(Flashbar.DURATION_LONG);
         }
         return flashbarBuilder;
     }
@@ -50,6 +50,7 @@ public class FlashbarUtils {
     public static void showConfirmationDialog(Activity context, String message, Flashbar.OnActionTapListener positiveTapListener, Flashbar.OnActionTapListener negativeTapListener) {
         getInstance(context)
                 .message(message)
+                .duration(Flashbar.DURATION_INDEFINITE)
                 .positiveActionText(android.R.string.yes)
                 .negativeActionText(android.R.string.no)
                 .positiveActionTextColorRes(R.color.colorAccent)

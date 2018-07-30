@@ -162,10 +162,10 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                                 Log.d(TAG, "onLoginComplete: " + isLoggedIn);
                                 Toast.makeText(context, "Logged in?: " + isLoggedIn, Toast.LENGTH_SHORT).show();
                                 if (isLoggedIn){
-                                    FlashbarUtils.showMessageDialog((Activity) context,"Login Successful");
+                                    FlashbarUtils.showMessageDialog((Activity) context,"Login Successful","User has been logged in successfully!");
                                 }
                                 else{
-                                    FlashbarUtils.showErrorDialog((Activity) context,"Failed to login");
+                                    FlashbarUtils.showErrorDialog((Activity) context,"Authentication Failed","Either your user credentials are wrong or the user is already logged in somewhere else.");
                                 }
                             }
                         });
@@ -206,7 +206,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                     @Override
                     public void onLogoutComplete() {
                         //TODO: Notify logout complete
-                        FlashbarUtils.showMessageDialog((Activity) context, "Logged out successfully!");
+                        FlashbarUtils.showMessageDialog((Activity) context,"Logout Sucessful!", "User has been logged out successfully!");
                     }
                 });
                 return true;
@@ -262,17 +262,17 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                                         Log.d(TAG, "onPasswordChangeSuccessful: " + "Password Changed on network");
                                         AddUserActivity.updateUser(user.getUserId(), newPassword, user.getNickname());
                                         Log.d(TAG, "onPasswordChangeSuccessful: " + "Password changed on local database");
-                                        FlashbarUtils.showMessageDialog((Activity) context,"Password changed successfully!");
+                                        FlashbarUtils.showMessageDialog((Activity) context,"Password Change Successful!","User Password has been changed successfully!");
                                     }
                                 });
                             } else {
                                 //TODO: Display dialog two passwords should match
                                 Log.d(TAG, "onClick: " + "Passwords are different");
-                                FlashbarUtils.showErrorDialog((Activity) context, "The two passwords must match!");
+                                FlashbarUtils.showErrorDialog((Activity) context, "Passwords must match!","The two passwords must match!");
                             }
                         } else {
                             //TODO: Display dialog length of password should be atleast 6 characters
-                            FlashbarUtils.showErrorDialog((Activity) context, "Length of password should be atleast 6 characters");
+                            FlashbarUtils.showErrorDialog((Activity) context, "Length error!","Length of password should be atleast 6 characters");
                         }
                     }
                 })
@@ -292,7 +292,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
      */
     private void deleteUser(final UserEntry user) {
         //TODO: Ask for confirmation before deleting
-        FlashbarUtils.showConfirmationDialog((Activity) context, "Are you sure you want to delete this user?",
+        FlashbarUtils.showConfirmationDialog((Activity) context,"Confirm Delete?", "Are you sure you want to delete this user?",
                 new Flashbar.OnActionTapListener() {
                     @Override
                     public void onActionTapped(Flashbar flashbar) {
@@ -422,7 +422,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                         Log.e(TAG, "onFailure: " + "User already logged in");
                     }
                     onLoginCompleteListener.onLoginComplete(true);
-                    Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -442,6 +442,10 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                         if (logoutCompleteListener != null) {
                             logoutCompleteListener.onLogoutComplete();
                         }
+                    }
+                    else if(returnedHtmlData.contains(SecureLoginService.USER_NOT_LOGGED_IN)){
+                        Log.i(TAG, "onResponse: "+SecureLoginService.USER_NOT_LOGGED_IN);
+                        FlashbarUtils.showErrorDialog(context,SecureLoginService.USER_NOT_LOGGED_IN,"You haven't logged in with any user yet.");
                     }
                 }
 
