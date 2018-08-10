@@ -78,6 +78,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         setContentView(R.layout.activity_user_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle(R.string.title_activity_user_list);
 
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
