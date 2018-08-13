@@ -11,6 +11,7 @@ import android.util.Log;
 
 
 import com.andrognito.flashbar.Flashbar;
+import com.shivora.puwifimanager.R;
 
 public class ConnectionUtils {
 
@@ -38,7 +39,7 @@ public class ConnectionUtils {
                 }
             }
             Log.d(TAG, "isNotConnectedToPuWifi: "+connected);
-            Flashbar.Builder flashbarBuilder = new Flashbar.Builder(context).gravity(Flashbar.Gravity.BOTTOM).duration(2000);
+            Flashbar.Builder flashbarBuilder = new Flashbar.Builder(context).gravity(Flashbar.Gravity.BOTTOM).duration(2000).backgroundColorRes(R.color.chuck_colorAccent);
             flashbarBuilder.title("Not connected to "+SSID_PU_CAMPUS)
                     .message("Please connect to "+SSID_PU_CAMPUS)
                     .build().show();
@@ -48,7 +49,7 @@ public class ConnectionUtils {
 
     private static boolean haveConnectedWifi(Activity context){
         boolean haveConnectedWifi = false;
-        Flashbar.Builder flashbarBuilder = new Flashbar.Builder(context).gravity(Flashbar.Gravity.BOTTOM).duration(2000);
+        Flashbar.Builder flashbarBuilder = new Flashbar.Builder(context).gravity(Flashbar.Gravity.BOTTOM).duration(2000).backgroundColorRes(R.color.chuck_colorAccent);
 
         //Get connectivity manager
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

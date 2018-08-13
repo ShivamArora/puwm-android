@@ -161,7 +161,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                             @Override
                             public void onLoginComplete(boolean isLoggedIn) {
                                 Log.d(TAG, "onLoginComplete: " + isLoggedIn);
-                                Toast.makeText(context, "Logged in?: " + isLoggedIn, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(context, "Logged in?: " + isLoggedIn, Toast.LENGTH_SHORT).show();
                                 if (isLoggedIn){
                                     FlashbarUtils.showMessageDialog((Activity) context,"Login Successful","User has been logged in successfully!");
                                 }

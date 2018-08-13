@@ -13,13 +13,15 @@ public class FlashbarUtils {
 
     private static Flashbar.Builder getInstance(Activity context) {
         if (flashbarBuilder == null) {
-            return new Flashbar.Builder(context).gravity(Flashbar.Gravity.BOTTOM).duration(Flashbar.DURATION_LONG);
+            return new Flashbar.Builder(context).gravity(Flashbar.Gravity.BOTTOM).duration(Flashbar.DURATION_LONG)
+                    .backgroundColorRes(R.color.chuck_colorPrimary);
         }
         return flashbarBuilder;
     }
 
     public static void showMessageDialog(Activity context, String msg) {
-        getInstance(context).gravity(Flashbar.Gravity.BOTTOM)
+        getInstance(context)
+                .backgroundColorRes(R.color.chuck_colorPrimary)
                 .message(msg)
                 .build()
                 .show();
@@ -27,6 +29,7 @@ public class FlashbarUtils {
 
     public static void showMessageDialog(Activity context, String title, String msg) {
         getInstance(context)
+                .backgroundColorRes(R.color.chuck_colorPrimary)
                 .title(title)
                 .message(msg)
                 .build()
@@ -35,6 +38,7 @@ public class FlashbarUtils {
 
     public static void showErrorDialog(Activity context,String message){
         getInstance(context)
+                .backgroundColorRes(R.color.chuck_colorAccent)
                 .message(message)
                 .build()
                 .show();
@@ -42,6 +46,7 @@ public class FlashbarUtils {
 
     public static void showErrorDialog(Activity context, String title, String message){
         getInstance(context)
+                .backgroundColorRes(R.color.chuck_colorAccent)
                 .title(title)
                 .message(message)
                 .build()
@@ -49,12 +54,12 @@ public class FlashbarUtils {
     }
     public static void showConfirmationDialog(Activity context, String message, Flashbar.OnActionTapListener positiveTapListener, Flashbar.OnActionTapListener negativeTapListener) {
         getInstance(context)
+                .backgroundColorRes(R.color.chuck_colorAccent)
                 .message(message)
-                .duration(Flashbar.DURATION_INDEFINITE)
                 .positiveActionText(android.R.string.yes)
                 .negativeActionText(android.R.string.no)
-                .positiveActionTextColorRes(R.color.colorAccent)
-                .negativeActionTextColorRes(R.color.colorAccent)
+                .positiveActionTextColorRes(R.color.chuck_colorPrimaryDark)
+                .negativeActionTextColorRes(R.color.chuck_colorPrimaryDark)
                 .positiveActionTapListener(positiveTapListener)
                 .negativeActionTapListener(negativeTapListener)
                 .build()
@@ -63,6 +68,7 @@ public class FlashbarUtils {
 
     public static void showConfirmationDialog(Activity context, String title, String message, Flashbar.OnActionTapListener positiveTapListener, Flashbar.OnActionTapListener negativeTapListener) {
         getInstance(context)
+                .backgroundColorRes(R.color.chuck_colorAccent)
                 .title(title)
                 .message(message)
                 .positiveActionText(android.R.string.yes)

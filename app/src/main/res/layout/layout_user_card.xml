@@ -38,7 +38,7 @@
             android:layout_marginTop="8dp"
             android:text="TextView"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="@android:color/secondary_text_dark_nodisable"
+            android:textColor="@color/textColorSecondary"
             card_view:layout_constraintEnd_toEndOf="@+id/tv_user_nickname"
             card_view:layout_constraintStart_toStartOf="@+id/tv_user_nickname"
             card_view:layout_constraintTop_toBottomOf="@+id/tv_user_nickname"
