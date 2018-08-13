@@ -206,7 +206,6 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                 logout((Activity) context, new Listeners.OnLogoutCompleteListener() {
                     @Override
                     public void onLogoutComplete() {
-                        //TODO: Notify logout complete
                         FlashbarUtils.showMessageDialog((Activity) context,"Logout Sucessful!", "User has been logged out successfully!");
                     }
                 });
@@ -267,12 +266,10 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                                     }
                                 });
                             } else {
-                                //TODO: Display dialog two passwords should match
                                 Log.d(TAG, "onClick: " + "Passwords are different");
                                 FlashbarUtils.showErrorDialog((Activity) context, "Passwords must match!","The two passwords must match!");
                             }
                         } else {
-                            //TODO: Display dialog length of password should be atleast 6 characters
                             FlashbarUtils.showErrorDialog((Activity) context, "Length error!","Length of password should be atleast 6 characters");
                         }
                     }
@@ -292,7 +289,6 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
      * @param user
      */
     private void deleteUser(final UserEntry user) {
-        //TODO: Ask for confirmation before deleting
         FlashbarUtils.showConfirmationDialog((Activity) context,"Confirm Delete?", "Are you sure you want to delete this user?",
                 new Flashbar.OnActionTapListener() {
                     @Override
@@ -305,12 +301,14 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                                 mUserDatabase.userDao().deleteUser(user);
                             }
                         });
+                        flashbar.dismiss();
                     }
                 },
                 new Flashbar.OnActionTapListener() {
                     @Override
                     public void onActionTapped(Flashbar flashbar) {
                         Log.i(TAG, "onActionTapped: "+"User selected NO");
+                        flashbar.dismiss();
                     }
                 });
     }

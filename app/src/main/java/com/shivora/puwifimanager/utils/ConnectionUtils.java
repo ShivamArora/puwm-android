@@ -67,7 +67,7 @@ public class ConnectionUtils {
         if (!haveConnectedWifi){
             flashbarBuilder
                     .title("Network not connected!")
-                    .message("Please connect to WiFi")
+                    .message("Please connect to WiFi and turn off mobile data if facing problems")
                     .build()
                     .show();
         }

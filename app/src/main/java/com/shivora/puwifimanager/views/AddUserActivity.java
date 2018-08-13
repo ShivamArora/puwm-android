@@ -96,8 +96,10 @@ public class AddUserActivity extends AppCompatActivity {
         final String password = etPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(nickname)||TextUtils.isEmpty(userId)||TextUtils.isEmpty(password)){
-            //TODO: Show error - All Fields are required
             FlashbarUtils.showErrorDialog((Activity) context,"All fields are required");
+        }
+        else if (password.length() < 6){
+            FlashbarUtils.showErrorDialog((Activity) context, "Length error!","Length of password should be atleast 6 characters");
         }
         else{
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
