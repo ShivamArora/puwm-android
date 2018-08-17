@@ -13,4 +13,6 @@
     <color name="textColorSecondary">#D5D6D6</color>
     
     <color name="bottomsheetBackground">#b9f6ca</color>
+    <color name="chuck_colorPrimary">#00BCD4</color>
+    <color name="chuck_colorAccent">#FF9800</color>
 </resources>
