@@ -8,4 +8,5 @@
     <string name="add_user">Add User</string>
     <string name="update_user">Update user</string>
     <string name="logout">Logout</string>
+    <string name="rate_us">Rate us</string>
 </resources>

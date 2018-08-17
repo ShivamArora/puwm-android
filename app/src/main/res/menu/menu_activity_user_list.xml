@@ -5,4 +5,9 @@
         android:icon="@drawable/ic_logout_24px"
         android:title="@string/logout"
         app:showAsAction="always"/>
+
+    <item android:id="@+id/action_rate_us"
+        android:icon="@drawable/ic_star_border_black_24dp"
+        android:title="@string/rate_us"
+        app:showAsAction="never"/>
 </menu>
