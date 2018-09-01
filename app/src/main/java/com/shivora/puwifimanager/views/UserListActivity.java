@@ -126,7 +126,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
             @Override
             public void onAdFailedToLoad(int i) {
                 super.onAdFailedToLoad(i);
-                Log.d(TAG, "onAdFailedToLoad: true");
+                Log.d(TAG, "onAdFailedToLoad: true"+i);
                 mAdView.setVisibility(View.GONE);
                 setFabBottomMargin(convertDpToPixel(16));
             }

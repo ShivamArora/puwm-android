@@ -3,8 +3,6 @@ package com.shivora.puwifimanager.networking;
 import android.content.Context;
 import android.util.Log;
 
-import com.readystatesoftware.chuck.ChuckInterceptor;
-
 import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -38,7 +36,7 @@ public class RetrofitClient {
     public static Retrofit getNetportalInstance(Context context) {
         if (netportalInstance == null) {
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-            httpClient.addNetworkInterceptor(new ChuckInterceptor(context));
+            //httpClient.addNetworkInterceptor(new ChuckInterceptor(context));
             //To enable storing cookies to maintain and retain the session
             CookieManager cookieManager = new CookieManager();
             cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
