@@ -50,6 +50,7 @@ import com.shivora.puwifimanager.networking.SecureLoginService;
 import com.shivora.puwifimanager.utils.AppExecutors;
 import com.shivora.puwifimanager.utils.ConnectionUtils;
 import com.shivora.puwifimanager.utils.FlashbarUtils;
+import com.shivora.puwifimanager.utils.analytics.Analytics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,6 +64,7 @@ import retrofit2.Response;
 public class UserListActivity extends AppCompatActivity implements ListItemClickListener {
 
     private static final String TAG = UserListActivity.class.getSimpleName();
+    public static final String EVENT_LOGIN_SUCCESSFUL = "Login Successful";
     private Context context;
 
     private UserDatabase mUserDatabase;
@@ -159,15 +161,18 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                 userOptionsBottomSheet.dismiss();
                 switch (id) {
                     case R.id.item_login:
+                        Analytics.logEventLoginClicked(context);
                         login((Activity) context, user.getUserId(), user.getPassword(), new Listeners.OnLoginCompleteListener() {
                             @Override
                             public void onLoginComplete(boolean isLoggedIn) {
                                 Log.d(TAG, "onLoginComplete: " + isLoggedIn);
                                 //Toast.makeText(context, "Logged in?: " + isLoggedIn, Toast.LENGTH_SHORT).show();
                                 if (isLoggedIn){
+                                    Analytics.logEventLoginSuccessful(context);
                                     FlashbarUtils.showMessageDialog((Activity) context,"Login Successful","User has been logged in successfully!");
                                 }
                                 else{
+                                    Analytics.logEventAuthenticationFailed(context);
                                     FlashbarUtils.showErrorDialog((Activity) context,"Authentication Failed","Either your user credentials are wrong or the user is already logged in somewhere else.");
                                 }
                             }
@@ -205,9 +210,11 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_logout:
+                Analytics.logEventLogoutClicked(context);
                 logout((Activity) context, new Listeners.OnLogoutCompleteListener() {
                     @Override
                     public void onLogoutComplete() {
+                        Analytics.logEventLogoutSuccessful(context);
                         FlashbarUtils.showMessageDialog((Activity) context,"Logout Sucessful!", "User has been logged out successfully!");
                     }
                 });
@@ -272,9 +279,11 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                             if (TextUtils.equals(newPassword, confirmPassword)) {
                                 Log.d(TAG, "onClick: " + "Passwords are same");
                                 //Change Password
+                                Analytics.logEventChangePasswordClicked(context);
                                 changePassword(user.getUserId(), user.getPassword(), newPassword, new Listeners.OnPasswordChangeSuccessfulListener() {
                                     @Override
                                     public void onPasswordChangeSuccessful() {
+                                        Analytics.logEventChangePasswordSuccessful(context);
                                         Log.d(TAG, "onPasswordChangeSuccessful: " + "Password Changed on network");
                                         AddUserActivity.updateUser(user.getUserId(), newPassword, user.getNickname());
                                         Log.d(TAG, "onPasswordChangeSuccessful: " + "Password changed on local database");
