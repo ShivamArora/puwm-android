@@ -67,8 +67,9 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     public static final String EVENT_LOGIN_SUCCESSFUL = "Login Successful";
     private Context context;
 
-    private UserDatabase mUserDatabase;
+    private static UserDatabase mUserDatabase;
     private UserListAdapter mUserListAdapter;
+    private static UserEntry mSelectedUser;
 
     private TextInputEditText etNewPassword, etConfirmPassword;
     private AdView mAdView;
@@ -152,6 +153,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
 
     @Override
     public void onListItemClick(final UserEntry user) {
+        mSelectedUser = user;
         Log.i(TAG, "onListItemClick: " + user.getNickname());
         final UserOptionsBottomSheet userOptionsBottomSheet = new UserOptionsBottomSheet();
         userOptionsBottomSheet.setOnUserOptionClickListener(new UserOptionsBottomSheet.UserOptionsClickListener() {
@@ -285,7 +287,13 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                                     public void onPasswordChangeSuccessful() {
                                         Analytics.logEventChangePasswordSuccessful(context);
                                         Log.d(TAG, "onPasswordChangeSuccessful: " + "Password Changed on network");
-                                        AddUserActivity.updateUser(user.getUserId(), newPassword, user.getNickname());
+                                        //Change password on local database
+                                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                updateUser(user.getUserId(), newPassword, user.getNickname());
+                                            }
+                                        });
                                         Log.d(TAG, "onPasswordChangeSuccessful: " + "Password changed on local database");
                                         FlashbarUtils.showMessageDialog((Activity) context,"Password Change Successful!","User Password has been changed successfully!");
                                     }
@@ -336,6 +344,14 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                         flashbar.dismiss();
                     }
                 });
+    }
+
+
+    public static void updateUser(String userId,String password,String nickname){
+        mSelectedUser.setUserId(userId);
+        mSelectedUser.setPassword(password);
+        mSelectedUser.setNickname(nickname);
+        mUserDatabase.userDao().updateUser(mSelectedUser);
     }
 
     /**
