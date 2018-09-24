@@ -51,3 +51,9 @@
 # OkHttp platform used only on JVM and when Conscrypt dependency is available.
 -dontwarn okhttp3.internal.platform.ConscryptPlatform
 -dontwarn okhttp3.internal.huc.OkHttpURLConnection
+
+
+# Rules for avoiding Proguard errors due to TapTargetView
+-keep class android.support.v7.widget.Toolbar { *** mMenuView; }
+-keep class android.support.v7.widget.ActionMenuView { *** mPresenter; }
+-keep class android.support.v7.widget.ActionMenuPresenter { *** mOverflowButton; }
