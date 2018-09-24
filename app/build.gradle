@@ -8,8 +8,8 @@ android {
         applicationId "com.shivora.puwifimanager"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 4
-        versionName "1.0.2"
+        versionCode 5
+        versionName "1.0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary true
     }
@@ -25,7 +25,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:customtabs:27.1.1'              //to avoid version conflicts in gradle build
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.support:design:27.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
@@ -55,12 +55,15 @@ dependencies {
     implementation 'com.android.support:cardview-v7:27.1.1'
 
     //Firebase core with Analytics
-    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-core:16.0.3'
 
     //Crashlytics
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
 
     //Firebase Ads with AdMob
     implementation 'com.google.firebase:firebase-ads:15.0.1'
+
+    //TapTargetView
+    implementation 'com.getkeepsafe.taptargetview:taptargetview:1.12.0'
 }
 apply plugin: 'com.google.gms.google-services'

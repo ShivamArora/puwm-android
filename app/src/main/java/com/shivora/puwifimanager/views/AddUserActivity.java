@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -105,9 +106,11 @@ public class AddUserActivity extends AppCompatActivity {
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d(TAG, "run: "+password);
+                    Log.d(TAG, "run: executor");
                     if (mUserId.equals(DEFAULT_USER_ID)) {
                         insertUser(userId, password, nickname);
+                        //Set Result for AddUserIntro
+                        setResult(RESULT_OK,null);
                     }
                     else{
                         updateUser(userId,password,nickname);

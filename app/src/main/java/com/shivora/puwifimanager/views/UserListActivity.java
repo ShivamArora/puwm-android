@@ -2,16 +2,17 @@ package com.shivora.puwifimanager.views;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
@@ -20,19 +21,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.andrognito.flashbar.Flashbar;
 import com.crashlytics.android.Crashlytics;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
+import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -65,6 +66,8 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
 
     private static final String TAG = UserListActivity.class.getSimpleName();
     public static final String EVENT_LOGIN_SUCCESSFUL = "Login Successful";
+    public static final String PREFS_IS_ADD_USERS_SHOWN = "is_add_users_shown";
+    public static final int RC_ADD_USER = 22;
     private Context context;
 
     private static UserDatabase mUserDatabase;
@@ -74,6 +77,9 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     private TextInputEditText etNewPassword, etConfirmPassword;
     private AdView mAdView;
     private FloatingActionButton fab;
+    private Toolbar toolbar;
+
+    SharedPreferences sharedPrefs;
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -81,7 +87,8 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_list);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.menu_activity_user_list);
         setSupportActionBar(toolbar);
         setTitle(R.string.title_activity_user_list);
 
@@ -106,6 +113,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         mUserListAdapter = new UserListAdapter(new ArrayList<UserEntry>(), this);
         recyclerView.setAdapter(mUserListAdapter);
         fetchUsers();
+        introduceAddUserBtn();
         loadAds();
     }
 
@@ -203,8 +211,21 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==RC_ADD_USER){
+            if (resultCode==RESULT_OK){
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putBoolean(PREFS_IS_ADD_USERS_SHOWN,true);
+                editor.commit();
+                introduceUserOptions();
+            }
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_activity_user_list, menu);
+        toolbar.inflateMenu(R.menu.menu_activity_user_list);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -295,7 +316,8 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                                             }
                                         });
                                         Log.d(TAG, "onPasswordChangeSuccessful: " + "Password changed on local database");
-                                        FlashbarUtils.showMessageDialog((Activity) context,"Password Change Successful!","User Password has been changed successfully!");
+                                        FlashbarUtils.showMessageDialog((Activity) context,"Password Change Successful!","User Password has been changed successfully!" +
+                                                "\n\nChanges may take sometime to take effect. Please be patient! :)");
                                     }
                                 });
                             } else {
@@ -352,6 +374,33 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
         mSelectedUser.setPassword(password);
         mSelectedUser.setNickname(nickname);
         mUserDatabase.userDao().updateUser(mSelectedUser);
+    }
+
+    private void introduceAddUserBtn(){
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean isAddUsersShown = sharedPrefs.getBoolean(PREFS_IS_ADD_USERS_SHOWN,false);
+        if (!isAddUsersShown){
+            TapTargetView.showFor(this,
+                    TapTarget.forView(findViewById(R.id.fab),getString(R.string.add_new_users),getString(R.string.info_add_new_users))
+                                .transparentTarget(true),
+                    new TapTargetView.Listener(){
+                        @Override
+                        public void onTargetClick(TapTargetView view) {
+                            super.onTargetClick(view);
+                            Intent addUserActivity = new Intent(context,AddUserActivity.class);
+                            startActivityForResult(addUserActivity, RC_ADD_USER);
+                        }
+                    });
+        }
+    }
+
+    private void introduceUserOptions() {
+            new TapTargetSequence(this).targets(
+                    TapTarget.forView(findViewById(R.id.rv_userlist),getString(R.string.users_list),getString(R.string.intro_users_list))
+                    .transparentTarget(true),
+                    TapTarget.forToolbarMenuItem(toolbar,R.id.action_logout,getString(R.string.logout),getString(R.string.intro_logout))
+                    .outerCircleColor(R.color.chuck_colorAccent).transparentTarget(true)
+            ).start();
     }
 
     /**

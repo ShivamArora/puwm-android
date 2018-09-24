@@ -9,4 +9,9 @@
     <string name="update_user">Update user</string>
     <string name="logout">Logout</string>
     <string name="rate_us">Rate us</string>
+    <string name="users_list">Users List</string>
+    <string name="intro_users_list">Tap on a user to display user options</string>
+    <string name="intro_logout">Click here to logout from PU@Campus wifi</string>
+    <string name="add_new_users">Add new users</string>
+    <string name="info_add_new_users">Click the + button to add new users.</string>
 </resources>
