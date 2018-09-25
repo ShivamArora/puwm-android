@@ -396,7 +396,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
 
     private void introduceUserOptions() {
             new TapTargetSequence(this).targets(
-                    TapTarget.forView(findViewById(R.id.rv_userlist),getString(R.string.users_list),getString(R.string.intro_users_list))
+                    TapTarget.forView(findViewById(R.id.cv_user),getString(R.string.users_list),getString(R.string.intro_users_list))
                     .transparentTarget(true),
                     TapTarget.forToolbarMenuItem(toolbar,R.id.action_logout,getString(R.string.logout),getString(R.string.intro_logout))
                     .outerCircleColor(R.color.chuck_colorAccent).transparentTarget(true)
