@@ -1,12 +1,18 @@
 package com.shivora.puwifimanager.utils;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.IpSecTransform;
 import android.net.NetworkInfo;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 
@@ -28,10 +34,13 @@ public class ConnectionUtils {
             WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             if (wifiInfo.getSupplicantState() == SupplicantState.COMPLETED){
+                if (isPieAndAbove()){
+                    connected = true;
+                    return connected;
+                }
                 String ssid = wifiInfo.getSSID();
                 //Replace double quotes around SSID with null character
                 ssid = ssid.replace("\"","");
-
                 if (ssid.equals(SSID_PU_CAMPUS)){
                     connected = true;
                     Log.d(TAG, "isConnectedToPuWifi: "+connected);
@@ -45,6 +54,10 @@ public class ConnectionUtils {
                     .build().show();
             return connected;
         }
+    }
+
+    private static boolean isPieAndAbove() {
+        return Build.VERSION.SDK_INT>= Build.VERSION_CODES.P;
     }
 
     private static boolean haveConnectedWifi(Activity context){

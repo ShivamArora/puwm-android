@@ -44,8 +44,8 @@ import com.shivora.puwifimanager.model.adapters.ListItemClickListener;
 import com.shivora.puwifimanager.model.adapters.UserListAdapter;
 import com.shivora.puwifimanager.model.database.UserDatabase;
 import com.shivora.puwifimanager.model.database.UserEntry;
-import com.shivora.puwifimanager.networking.NetportalService;
 import com.shivora.puwifimanager.networking.Listeners;
+import com.shivora.puwifimanager.networking.NetportalService;
 import com.shivora.puwifimanager.networking.RetrofitClient;
 import com.shivora.puwifimanager.networking.SecureLoginService;
 import com.shivora.puwifimanager.utils.AppExecutors;
@@ -186,6 +186,16 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                                     FlashbarUtils.showErrorDialog((Activity) context,"Authentication Failed","Either your user credentials are wrong or the user is already logged in somewhere else.");
                                 }
                             }
+
+                            @Override
+                            public void onLoginComplete(boolean isLoggedIn, String msg) {
+                                if (isLoggedIn){
+                                    FlashbarUtils.showMessageDialog((Activity)context,msg);
+                                }
+                                else{
+                                    FlashbarUtils.showErrorDialog((Activity)context,msg);
+                                }
+                            }
                         });
                         break;
 
@@ -217,7 +227,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
             if (resultCode==RESULT_OK){
                 SharedPreferences.Editor editor = sharedPrefs.edit();
                 editor.putBoolean(PREFS_IS_ADD_USERS_SHOWN,true);
-                editor.commit();
+                editor.apply();
                 introduceUserOptions();
             }
         }
@@ -395,8 +405,11 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
     }
 
     private void introduceUserOptions() {
+        View recyclerView = findViewById(R.id.rv_userlist);
+        View view = recyclerView.findViewById(R.id.rv_userlist);
+        Log.i(TAG, "introduceUserOptions: "+view);
             new TapTargetSequence(this).targets(
-                    TapTarget.forView(findViewById(R.id.cv_user),getString(R.string.users_list),getString(R.string.intro_users_list))
+                    TapTarget.forView(view,getString(R.string.users_list),getString(R.string.intro_users_list))
                     .transparentTarget(true),
                     TapTarget.forToolbarMenuItem(toolbar,R.id.action_logout,getString(R.string.logout),getString(R.string.intro_logout))
                     .outerCircleColor(R.color.chuck_colorAccent).transparentTarget(true)
@@ -445,6 +458,19 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                             });
                         }
                     });
+                }
+                else{
+                    FlashbarUtils.showErrorDialog((Activity) context,"Authentication Failed","Either your user credentials are wrong or the user is already logged in somewhere else.");
+                }
+            }
+
+            @Override
+            public void onLoginComplete(boolean isLoggedIn, String msg) {
+                if (isLoggedIn){
+                    FlashbarUtils.showMessageDialog((Activity)context,msg);
+                }
+                else{
+                    FlashbarUtils.showErrorDialog((Activity)context,msg);
                 }
             }
         });
@@ -509,8 +535,12 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                     Log.e(TAG, "onFailure: " + t.getMessage());
                     if (t.getMessage().contains(SecureLoginService.LOGIN_ALREADY_LOGGED_IN)) {
                         Log.e(TAG, "onFailure: " + "User already logged in");
+                        onLoginCompleteListener.onLoginComplete(true);
                     }
-                    onLoginCompleteListener.onLoginComplete(true);
+                    else if(t.getMessage().contains(SecureLoginService.UNABLE_TO_RESOLVE_HOST)){
+                        Log.e(TAG, "onFailure: "+getString(R.string.unable_to_resolve_host) );
+                        onLoginCompleteListener.onLoginComplete(false,getString(R.string.unable_to_resolve_host));
+                    }
                     //Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -545,5 +575,4 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
             });
         }
     }
-
 }

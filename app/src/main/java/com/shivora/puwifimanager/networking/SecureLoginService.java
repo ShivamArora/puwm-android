@@ -18,6 +18,7 @@ public interface SecureLoginService {
     String USER_NOT_LOGGED_IN = "User not logged in";
     String LOGIN_ALREADY_LOGGED_IN = "Too many follow-up requests";
     String LOGIN_FAILURE_STRING = "Authentication failed";
+    String UNABLE_TO_RESOLVE_HOST = "Unable to resolve host \"securelogin.pu.ac.in\"";
 
     @GET("/cgi-bin/login?cmd=login")
     Call<String> loginUser(@QueryMap Map<String,String> userInfo);
