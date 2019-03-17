@@ -198,7 +198,16 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                             }
                         });
                         break;
-
+                    case R.id.item_logout_user:
+                        Analytics.logEventLogoutClicked(context);
+                        logout((Activity) context, new Listeners.OnLogoutCompleteListener() {
+                            @Override
+                            public void onLogoutComplete() {
+                                Analytics.logEventLogoutSuccessful(context);
+                                FlashbarUtils.showMessageDialog((Activity) context,"Logout Sucessful!", "User has been logged out successfully!");
+                            }
+                        });
+                        break;
                     case R.id.item_edit_user:
                         Intent editUserIntent = new Intent(context, AddUserActivity.class);
                         editUserIntent.putExtra(AddUserActivity.EXTRA_USER_ID, user.getUserId());
@@ -251,6 +260,12 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                         FlashbarUtils.showMessageDialog((Activity) context,"Logout Sucessful!", "User has been logged out successfully!");
                     }
                 });
+                return true;
+            case R.id.action_privacy_policy:
+                Uri privacyPolicyUri = Uri.parse(getString(R.string.privacy_policy_url));
+                Intent viewPrivacyPolicy = new Intent(Intent.ACTION_VIEW,privacyPolicyUri);
+                viewPrivacyPolicy.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY|Intent.FLAG_ACTIVITY_NEW_DOCUMENT|Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                startActivity(viewPrivacyPolicy);
                 return true;
             case R.id.action_rate_us:
                 Uri uri = Uri.parse("market://details?id="+context.getPackageName());

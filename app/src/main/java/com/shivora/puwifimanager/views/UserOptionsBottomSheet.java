@@ -16,7 +16,7 @@ public class UserOptionsBottomSheet extends BottomSheetDialogFragment implements
         void onUserOptionClicked(View view);
     }
 
-    private ConstraintLayout loginView,editUserView,changePasswordView,deleteUserView;
+    private ConstraintLayout loginView,logoutUserView,editUserView,changePasswordView,deleteUserView;
     private UserOptionsClickListener userOptionsClickListener;
 
     static BottomSheetDialogFragment newInstance(){
@@ -28,11 +28,13 @@ public class UserOptionsBottomSheet extends BottomSheetDialogFragment implements
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View bottomSheetView = inflater.inflate(R.layout.layout_bottomsheet_user_options,container,false);
         loginView = bottomSheetView.findViewById(R.id.item_login);
+        logoutUserView = bottomSheetView.findViewById(R.id.item_logout_user);
         editUserView = bottomSheetView.findViewById(R.id.item_edit_user);
         changePasswordView = bottomSheetView.findViewById(R.id.item_change_password);
         deleteUserView = bottomSheetView.findViewById(R.id.item_delete_user);
 
         loginView.setOnClickListener(this);
+        logoutUserView.setOnClickListener(this);
         editUserView.setOnClickListener(this);
         changePasswordView.setOnClickListener(this);
         deleteUserView.setOnClickListener(this);

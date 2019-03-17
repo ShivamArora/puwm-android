@@ -8,15 +8,21 @@ android {
         applicationId "com.shivora.puwifimanager"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 7
-        versionName "1.0.5"
+        versionCode 8
+        versionName "1.0.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary true
     }
     buildTypes {
+        debug{
+            resValue 'string', "admob_app_id", SAMPLE_ADMOB_APP_ID
+            resValue 'string', "userlistbanner_adunit_id", SAMPLE_BANNER_ID
+        }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue 'string', "admob_app_id", ADMOB_APP_ID
+            resValue 'string', "userlistbanner_adunit_id", USERLISTBANNER_ADUNIT_ID
         }
     }
 }
@@ -55,13 +61,13 @@ dependencies {
     implementation 'com.android.support:cardview-v7:28.0.0'
 
     //Firebase core with Analytics
-    implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.firebase:firebase-core:16.0.8'
 
     //Crashlytics
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.6'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
 
     //Firebase Ads with AdMob
-    implementation 'com.google.firebase:firebase-ads:17.0.0'
+    implementation 'com.google.firebase:firebase-ads:17.2.0'
 
     //TapTargetView
     implementation 'com.getkeepsafe.taptargetview:taptargetview:1.12.0'

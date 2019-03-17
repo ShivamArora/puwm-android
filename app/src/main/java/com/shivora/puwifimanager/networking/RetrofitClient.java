@@ -25,8 +25,10 @@ public class RetrofitClient {
 
     public static Retrofit getSecureLoginInstance() {
         if (secureLoginInstance==null) {
+            OkHttpClient unsafeHttpClient = UnsafeOkHttpClient.getUnsafeOkHttpClient();
             secureLoginInstance = new Retrofit.Builder()
                     .baseUrl(BASE_URL_SECURE_LOGIN)
+                    .client(unsafeHttpClient)
                     .addConverterFactory(ScalarsConverterFactory.create())
                     .build();
         }
