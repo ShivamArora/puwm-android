@@ -79,9 +79,9 @@ public class AddUserActivity extends AppCompatActivity {
         });
     }
 
-    private void insertUser(String userId,String password,String nickname){
+    private long insertUser(String userId,String password,String nickname){
         mUser = new UserEntry(userId,password,nickname);
-        mUserDatabase.userDao().insertUser(mUser);
+        return mUserDatabase.userDao().insertUser(mUser);
     }
 
     public static void updateUser(String userId,String password,String nickname){
@@ -108,7 +108,16 @@ public class AddUserActivity extends AppCompatActivity {
                 public void run() {
                     Log.d(TAG, "run: executor");
                     if (mUserId.equals(DEFAULT_USER_ID)) {
-                        insertUser(userId, password, nickname);
+                        long id = insertUser(userId, password, nickname);
+                        if (id<1){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    FlashbarUtils.showErrorDialog((Activity) context,"Failed to create user","A user with the same user id might already exist!");
+                                }
+                            });
+                            return;
+                        }
                         //Set Result for AddUserIntro
                         setResult(RESULT_OK,null);
                     }

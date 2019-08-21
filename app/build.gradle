@@ -2,27 +2,31 @@ apply plugin: 'com.android.application'
 //Crashlytics
 apply plugin: 'io.fabric'
 
+def secretPropertiesFile = rootProject.file("secret.properties")
+def secretProperties = new Properties()
+secretProperties.load(new FileInputStream(secretPropertiesFile))
+
 android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.shivora.puwifimanager"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 8
-        versionName "1.0.6"
+        versionCode 9
+        versionName "1.0.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary true
     }
     buildTypes {
         debug{
-            resValue 'string', "admob_app_id", SAMPLE_ADMOB_APP_ID
-            resValue 'string', "userlistbanner_adunit_id", SAMPLE_BANNER_ID
+            resValue 'string', "admob_app_id", secretProperties['SAMPLE_ADMOB_APP_ID']
+            resValue 'string', "userlistbanner_adunit_id", secretProperties['SAMPLE_BANNER_ID']
         }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue 'string', "admob_app_id", ADMOB_APP_ID
-            resValue 'string', "userlistbanner_adunit_id", USERLISTBANNER_ADUNIT_ID
+            resValue 'string', "admob_app_id", secretProperties['ADMOB_APP_ID']
+            resValue 'string', "userlistbanner_adunit_id", secretProperties['USERLISTBANNER_ADUNIT_ID']
         }
     }
 }
