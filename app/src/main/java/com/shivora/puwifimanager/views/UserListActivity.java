@@ -552,7 +552,7 @@ public class UserListActivity extends AppCompatActivity implements ListItemClick
                         Log.e(TAG, "onFailure: " + "User already logged in");
                         onLoginCompleteListener.onLoginComplete(true);
                     }
-                    else if(t.getMessage().contains(SecureLoginService.UNABLE_TO_RESOLVE_HOST)){
+                    else if(t.getMessage().contains(SecureLoginService.UNABLE_TO_RESOLVE_HOST) || t.getMessage().contains(SecureLoginService.FAILED_TO_CONNECT)){
                         Log.e(TAG, "onFailure: "+getString(R.string.unable_to_resolve_host) );
                         onLoginCompleteListener.onLoginComplete(false,getString(R.string.unable_to_resolve_host));
                     }
